@@ -365,13 +365,27 @@ export const finishTrick = async (roomId) => {
     gameState.currentTrick = [];
     gameState.leadSuit = null;
     gameState.trickNumber++;
-    const gameFinished = gameState.trickNumber > 13;
-    // 6. Check if game has finished
+    // 6. Check if round has finished:
+    // a) One team secured majority Mindis (3 or 4 Mindis, e.g. 3 vs 1 or 4 vs 0)
+    const hasMindiMajority = gameState.teamAMindis >= 3 || gameState.teamBMindis >= 3;
+    // b) Equal Mindis (e.g. 2-2 tie) and one team has reached 7 or more hands (tricks)
+    const hasEqualMindiHandsMajority = gameState.teamAMindis === gameState.teamBMindis &&
+        (gameState.teamATricks >= 7 || gameState.teamBTricks >= 7);
+    // c) All 13 tricks completed
+    const allTricksDone = gameState.trickNumber > 13;
+    const gameFinished = hasMindiMajority || hasEqualMindiHandsMajority || allTricksDone;
     if (gameFinished) {
-        await endGame(roomId);
+        setTimeout(async () => {
+            try {
+                await endGame(roomId);
+            }
+            catch (err) {
+                console.error("Error ending game:", err);
+            }
+        }, 2000);
         return;
     }
-    // 7. Broadcast next turn after 1.5s delay so all players see who won the trick
+    // 7. Broadcast next turn after 2.0s delay so all players see who won the trick and cards stay on table
     setTimeout(() => {
         broadcastToRoom(room.roomCode, {
             type: "turn_changed",
@@ -380,7 +394,7 @@ export const finishTrick = async (roomId) => {
             currentTrick: [],
             trickNumber: gameState.trickNumber,
         });
-    }, 1500);
+    }, 2000);
 };
 const CARD_RANK = {
     "2": 2,
