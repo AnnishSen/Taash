@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: taash-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-taash_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taash_secure_password_123}
+      POSTGRES_DB: ${POSTGRES_DB:-taash_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-taash_user} -d ${POSTGRES_DB:-taash_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taash-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://${POSTGRES_USER:-taash_user}:${POSTGRES_PASSWORD:-taash_secure_password_123}@postgres:5432/${POSTGRES_DB:-taash_db}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-taash_super_secret_jwt_key_2026}
+      NODE_ENV: production
+    ports:
+      - "8080:8080"
+    command: >
+      sh -c "npx prisma db push && node dist/server.js"
+
+volumes:
+  postgres_data:
+    driver: local

@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid())
+
+  username String @unique
+  email    String @unique
+  password String
+
+  isOnline Boolean
+
+  sentRequests     FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+
+  friendships1 Friendship[] @relation("UserFriendships1")
+  friendships2 Friendship[] @relation("UserFriendships2")
+
+  hostedRooms Room[] @relation("HostRooms")
+
+  roomPlayers RoomPlayer[]
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model FriendRequest {
+  id String @id @default(cuid())
+
+  senderId   String
+  receiverId String
+
+  status FriendRequestStatus @default(PENDING)
+
+  sender   User @relation("SentRequests", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedRequests", fields: [receiverId], references: [id])
+}
+
+model Friendship {
+  id String @id @default(cuid())
+
+  user1Id String
+  user2Id String
+
+  user1 User @relation("UserFriendships1", fields: [user1Id], references: [id])
+  user2 User @relation("UserFriendships2", fields: [user2Id], references: [id])
+}
+
+enum RoomStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
+model Room {
+  id String @id @default(cuid())
+
+  roomCode String @unique
+
+  hostId String
+
+  status RoomStatus @default(WAITING)
+
+  host User @relation("HostRooms", fields: [hostId], references: [id])
+
+  players RoomPlayer[]
+}
+
+model RoomPlayer {
+  id String @id @default(cuid())
+
+  roomId String
+  userId String
+
+  seat Int
+
+  isReady Boolean @default(false)
+
+  room Room @relation(fields: [roomId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([roomId, userId])
+}
