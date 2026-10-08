@@ -20,6 +20,7 @@ COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
 
 RUN npm ci
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/taash_db?schema=public"
 RUN npx prisma generate
 
 COPY backend/ ./
@@ -42,6 +43,7 @@ COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
 
 RUN npm ci --omit=dev
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/taash_db?schema=public"
 RUN npx prisma generate
 
 # Copy compiled backend dist and generated lib
