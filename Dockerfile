@@ -44,8 +44,9 @@ COPY backend/prisma ./prisma/
 RUN npm ci --omit=dev
 RUN npx prisma generate
 
-# Copy compiled backend dist
+# Copy compiled backend dist and generated lib
 COPY --from=backend-builder /app/backend/dist ./dist
+COPY --from=backend-builder /app/backend/lib ./lib
 
 # Copy built frontend into public directory for unified single-server serving
 COPY --from=frontend-builder /app/frontend/dist ./public

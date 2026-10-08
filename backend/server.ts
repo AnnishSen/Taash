@@ -58,8 +58,8 @@ for (const p of possibleDistPaths) {
 if (frontendDist) {
   console.log(`[Static] Serving frontend from: ${frontendDist}`);
   app.use(express.static(frontendDist));
-  // SPA fallback for client-side routing
-  app.get("*", (req, res) => {
+  // SPA fallback for client-side routing (Express 5 compatible)
+  app.use((req, res) => {
     res.sendFile(path.join(frontendDist!, "index.html"));
   });
 } else {
