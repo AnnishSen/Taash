@@ -53,4 +53,4 @@ COPY --from=frontend-builder /app/frontend/dist ./public
 
 EXPOSE 8080
 
-CMD ["node", "dist/server.js"]
+CMD ["npm", "run", "start:prod"]
