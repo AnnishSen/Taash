@@ -46,9 +46,8 @@ RUN npm ci --omit=dev
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/taash_db?schema=public"
 RUN npx prisma generate
 
-# Copy compiled backend dist and generated lib
+# Copy compiled backend dist
 COPY --from=backend-builder /app/backend/dist ./dist
-COPY --from=backend-builder /app/backend/lib ./lib
 
 # Copy built frontend for unified single-server serving
 COPY --from=frontend-builder /app/frontend/dist ./public

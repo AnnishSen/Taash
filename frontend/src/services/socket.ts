@@ -12,7 +12,8 @@ class SocketService {
 
   constructor() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.port === '5173' ? 'localhost:8080' : window.location.host;
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const host = isDev && window.location.port !== '8080' ? `${window.location.hostname}:8080` : window.location.host;
     this.url = `${protocol}//${host}`;
   }
 
