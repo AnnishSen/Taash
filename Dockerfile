@@ -30,7 +30,7 @@ RUN npm run build
 # STAGE 3: Production Runner Image
 # ==========================================
 FROM node:20-alpine AS runner
-WORKDIR /app
+WORKDIR /app/backend
 
 ENV NODE_ENV=production
 ENV PORT=8080
@@ -50,8 +50,9 @@ RUN npx prisma generate
 COPY --from=backend-builder /app/backend/dist ./dist
 COPY --from=backend-builder /app/backend/lib ./lib
 
-# Copy built frontend into public directory for unified single-server serving
+# Copy built frontend for unified single-server serving
 COPY --from=frontend-builder /app/frontend/dist ./public
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
 EXPOSE 8080
 
