@@ -114,6 +114,14 @@ body {
   user-select: none;
 }
 
+.logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));
+  animation: float-icon 3s ease-in-out infinite;
+}
+
 .logo-icon {
   font-size: 28px;
   line-height: 1;
@@ -345,10 +353,57 @@ body {
 }
 
 .card-item.selected {
-  transform: translateY(-26px) scale(1.1) !important;
-  box-shadow: 0 0 25px var(--accent-gold), 0 20px 35px rgba(0, 0, 0, 0.7) !important;
+  transform: translateY(-28px) scale(1.06) !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.65), 0 0 16px rgba(245, 158, 11, 0.65) !important;
   border: 2px solid var(--accent-gold) !important;
-  z-index: 90 !important;
+  z-index: 95 !important;
+}
+
+.hand-card-wrapper:has(.selected) {
+  z-index: 95 !important;
+}
+
+/* ========================================================
+   TRUMP (RANG) CARDS: SUBTLE DIFFERENCE IN APPEARANCE ONLY
+======================================================== */
+.card-item.is-trump {
+  /* Subtle ivory / warm cream surface distinguishable from plain cards */
+  background: linear-gradient(155deg, #ffffff 0%, #fffdf8 55%, #fefcf2 100%) !important;
+  /* Soft warm golden-amber border tint */
+  border-color: rgba(217, 119, 6, 0.5) !important;
+  /* Delicate warm rim glow */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22), 0 0 7px rgba(245, 158, 11, 0.25) !important;
+}
+
+.card-item.is-trump.selected {
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.65), 0 0 18px rgba(245, 158, 11, 0.75) !important;
+}
+
+.trump-corner-accent {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.trump-mini-gem {
+  font-size: 8px;
+  color: #d97706;
+  opacity: 0.88;
+  display: inline-block;
+  filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.35));
+}
+
+.card-item.size-sm .trump-corner-accent {
+  top: 2px;
+  right: 3px;
+}
+
+.card-item.size-sm .trump-mini-gem {
+  font-size: 6px;
 }
 
 .card-red {
@@ -2010,7 +2065,7 @@ body {
 .traat-mode-buttons-stack {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
 }
 
 .traat-sound-btn {
@@ -2018,8 +2073,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 9px 16px;
-  min-width: 100px;
+  padding: 6px 14px;
+  min-width: 90px;
   border-radius: 12px;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.07);
@@ -2043,8 +2098,17 @@ body {
   background: linear-gradient(135deg, rgba(14, 165, 233, 0.45), rgba(59, 130, 246, 0.45));
   border-color: #38bdf8;
   color: #ffffff;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.6);
-  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+  transform: scale(1.04);
+}
+
+.traat-sound-btn.active-halki {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.45), rgba(245, 158, 11, 0.45));
+  border-color: #34d399;
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.65), 0 0 10px rgba(245, 158, 11, 0.5);
+  transform: scale(1.04);
 }
 
 .traat-sound-btn.active-traat {
@@ -2106,3 +2170,1325 @@ body {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
+
+
+/* ========================================================
+   COAT & TARIYA CELEBRATIONS & TAUNT STYLES
+======================================================== */
+
+/* In-Game Center Felt Coat Popup */
+.coat-table-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 28px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(185, 28, 28, 0.95));
+  border: 2px solid rgba(254, 202, 202, 0.8);
+  border-radius: 24px;
+  box-shadow: 0 0 50px rgba(239, 68, 68, 0.8), 0 20px 40px rgba(0, 0, 0, 0.6);
+  animation: coat-popup-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: none;
+}
+
+@keyframes coat-popup-enter {
+  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+  70% { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.coat-popup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.coat-popup-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fef08a;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Modal Coat Celebration Card */
+.coat-celebration-card {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(185, 28, 28, 0.12));
+  border: 2px solid rgba(239, 68, 68, 0.5);
+  border-radius: 20px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.3);
+  animation: glow-pulse-coat 2.5s infinite ease-in-out;
+}
+
+@keyframes glow-pulse-coat {
+  0%, 100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 45px rgba(239, 68, 68, 0.55); border-color: rgba(239, 68, 68, 0.8); }
+}
+
+.coat-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
+}
+
+.coat-title-text {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fef08a;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.coat-subtitle-text {
+  font-size: 13px;
+  color: #e2e8f0;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Modal Tariya Taunt Card */
+.tariya-taunt-container {
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: tariya-entrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
+}
+
+@keyframes tariya-entrance {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.tariya-taunt-container.is-winner-taunt {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(88, 28, 135, 0.15));
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+}
+
+.tariya-taunt-container.is-victim-taunt {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(127, 29, 29, 0.18));
+  border: 2px solid rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+}
+
+.tariya-taunt-container.is-neutral-taunt {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(180, 83, 9, 0.15));
+  border: 2px solid rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.35);
+}
+
+.tariya-headline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7e22ce, #9333ea);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.5);
+}
+
+.tariya-taunt-speech-bubble {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 14px;
+  padding: 14px 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.tariya-roast-quote {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fef08a;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.tariya-roast-sub {
+  font-size: 13px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+/* Epic Combo: Coat + Tariya */
+.epic-combo-banner {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(239, 68, 68, 0.25), rgba(168, 85, 247, 0.25));
+  border: 2px solid rgba(245, 158, 11, 0.7);
+  border-radius: 22px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 50px rgba(245, 158, 11, 0.45);
+  animation: epic-combo-pulse 3s infinite ease-in-out;
+}
+
+@keyframes epic-combo-pulse {
+  0%, 100% { border-color: rgba(245, 158, 11, 0.7); box-shadow: 0 0 35px rgba(245, 158, 11, 0.4); }
+  50% { border-color: rgba(239, 68, 68, 0.9); box-shadow: 0 0 60px rgba(239, 68, 68, 0.6); }
+}
+
+.epic-combo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  margin-bottom: 10px;
+  box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6);
+}
+
+.epic-combo-sub {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fef08a;
+  margin: 0;
+}
+
+/* Mini Badges inside Team score cards */
+.mini-coat-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+}
+
+.mini-tariya-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #9333ea;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.5);
+}
+
+.flame-flicker {
+  animation: flicker 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes flicker {
+  0% { transform: scale(0.95); opacity: 0.85; }
+  100% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8)); }
+}
+
+.skull-shake {
+  animation: skull-wiggle 1.5s infinite ease-in-out;
+}
+
+@keyframes skull-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+/* ========================================================
+   RESPONSIVE MOBILE ENGINE: ANDROID & INFINIX GT 20 PRO
+======================================================== */
+
+/* Table Mode Full Viewport Lockdown (No vertical scrolling during game) */
+.app-container.in-table-mode {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.app-container.in-table-mode .main-content {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .app-container.in-table-mode .top-navbar {
+    display: none !important;
+  }
+}
+
+/* ========================================================
+   ANDROID MOBILE LANDSCAPE (MATCHES DEMO VIDEO EXACTLY)
+   Aspect ratios ~ 19:9 to 21:9 (e.g. Infinix GT 20 Pro: 1080x2436)
+======================================================== */
+@media (orientation: landscape) and (max-height: 600px) {
+  .top-navbar {
+    display: none !important;
+  }
+
+  .app-container {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  .table-stage-wrapper {
+    padding: 0 8px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  /* Compact floating action buttons on top edges */
+  .game-table-top-actions {
+    position: absolute !important;
+    top: 6px !important;
+    left: 12px !important;
+    right: 12px !important;
+    z-index: 45 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    pointer-events: auto !important;
+  }
+
+  .game-table-top-actions .btn {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+    height: 28px !important;
+  }
+
+  /* Sleek Oval Felt Table Filling Landscape Screen */
+  .felt-table {
+    width: 95vw !important;
+    max-width: 1040px !important;
+    height: calc(100dvh - 105px) !important;
+    min-height: 210px !important;
+    max-height: 290px !important;
+    border-radius: 140px !important;
+    border: 9px solid #1e293b !important;
+    box-shadow: 
+      0 0 0 2px #475569,
+      0 0 0 5px #0f172a,
+      inset 0 0 70px rgba(0, 0, 0, 0.55),
+      0 12px 35px rgba(0, 0, 0, 0.75) !important;
+    margin-top: 34px !important;
+  }
+
+  .table-center-mode-label {
+    font-size: 11px !important;
+    top: 14% !important;
+  }
+
+  /* Top Left Bandh Rang Widget */
+  .top-left-trump-bar {
+    top: 8px !important;
+    left: 20px !important;
+  }
+
+  .trump-deck-pill {
+    padding: 2px 8px !important;
+    border-radius: 10px !important;
+    font-size: 11px !important;
+  }
+
+  /* 4 Player Stations Around The Oval Table */
+  .player-station.station-top {
+    top: -24px !important;
+  }
+  .player-station.station-bottom {
+    bottom: 14px !important;
+  }
+  .player-station.station-left {
+    left: -14px !important;
+  }
+  .player-station.station-right {
+    right: -14px !important;
+  }
+
+  .avatar-timer-wrapper {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .player-avatar-main {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+  .player-station-name {
+    font-size: 8.5px !important;
+    padding: 1px 5px !important;
+    max-width: 60px !important;
+  }
+
+  /* WE & THEM Scoreboards Placed on Felt */
+  .felt-team-score-we {
+    left: 12% !important;
+    bottom: 12% !important;
+    gap: 3px !important;
+  }
+  .felt-team-score-them {
+    right: 12% !important;
+    bottom: 12% !important;
+    gap: 3px !important;
+  }
+
+  .mindi-mini-card {
+    width: 14px !important;
+    height: 20px !important;
+    font-size: 8px !important;
+  }
+  .felt-trick-num {
+    font-size: 18px !important;
+  }
+  .felt-team-title {
+    font-size: 10px !important;
+  }
+
+  /* Center Trick Arena */
+  .center-trick-cross-arena {
+    width: 140px !important;
+    height: 140px !important;
+  }
+  .center-hide-badge {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .trick-cross-slot .card-item.size-md {
+    width: 44px !important;
+    height: 64px !important;
+    padding: 2px 3px !important;
+  }
+
+  /* Bottom Hand Tray Across Screen */
+  .hand-tray-container {
+    position: fixed !important;
+    bottom: 2px !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-top: 0 !important;
+    z-index: 40 !important;
+    width: 100vw !important;
+  }
+
+  .player-hand-row-with-traat {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+  }
+
+  .player-hand-tray {
+    height: 84px !important;
+    max-width: 88vw !important;
+    overflow: visible !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    padding-bottom: 2px !important;
+  }
+
+  .hand-card-wrapper {
+    margin-left: -26px !important;
+    transition: transform 0.15s ease, margin 0.15s ease !important;
+  }
+  .hand-card-wrapper:hover,
+  .hand-card-wrapper:focus-within {
+    margin-left: -14px !important;
+    margin-right: 12px !important;
+    transform: translateY(-16px) !important;
+  }
+
+  .player-hand-tray .card-item.size-md {
+    width: 52px !important;
+    height: 76px !important;
+    padding: 3px 4px !important;
+    border-radius: 6px !important;
+  }
+
+  .player-hand-tray .card-item.size-md .card-rank {
+    font-size: 10px !important;
+  }
+  .player-hand-tray .card-item.size-md .royal-letter {
+    font-size: 12px !important;
+  }
+
+  .traat-dock-right {
+    padding: 3px 6px !important;
+    margin-bottom: 2px !important;
+    border-radius: 12px !important;
+  }
+  .traat-sound-btn {
+    padding: 4px 8px !important;
+    font-size: 9px !important;
+    min-width: 58px !important;
+  }
+}
+
+/* ========================================================
+   ANDROID MOBILE PORTRAIT (<= 560px)
+   e.g. Infinix GT 20 Pro: 1080x2436 / ~390px-412px wide
+======================================================== */
+@media (max-width: 560px) and (orientation: portrait) {
+  .table-stage-wrapper {
+    padding: 4px 2px 0 2px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    overflow: hidden !important;
+  }
+
+  .game-table-top-actions {
+    width: 100% !important;
+    padding: 0 4px !important;
+    margin-bottom: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .game-table-top-actions .btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    height: 30px !important;
+  }
+
+  /* Sized to perfectly fit tall Android screens */
+  .felt-table {
+    width: 98vw !important;
+    height: clamp(280px, 44dvh, 370px) !important;
+    border-radius: clamp(44px, 12vw, 75px) !important;
+    border-width: 7px !important;
+    box-shadow: 0 0 0 2px #475569, 0 0 0 4px #0f172a, var(--shadow-table) !important;
+    margin: 0 auto !important;
+  }
+
+  .table-center-mode-label {
+    font-size: 10.5px !important;
+    top: 14% !important;
+  }
+
+  /* Player stations inside screen borders */
+  .player-station.station-top {
+    top: -16px !important;
+  }
+  .player-station.station-bottom {
+    bottom: -16px !important;
+  }
+  .player-station.station-left {
+    left: 2px !important;
+  }
+  .player-station.station-right {
+    right: 2px !important;
+  }
+
+  .avatar-timer-wrapper {
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .player-avatar-main {
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 13.5px !important;
+  }
+  .player-station-name {
+    font-size: 8.5px !important;
+    padding: 1px 5px !important;
+    max-width: 60px !important;
+  }
+
+  /* Scores flanking user at bottom */
+  .felt-team-score-we {
+    left: calc(50% - 88px) !important;
+    bottom: 6px !important;
+    gap: 2px !important;
+  }
+  .felt-team-score-them {
+    left: calc(50% + 88px) !important;
+    bottom: 6px !important;
+    gap: 2px !important;
+  }
+  .mindi-mini-card {
+    width: 13px !important;
+    height: 18px !important;
+    font-size: 7.5px !important;
+  }
+  .felt-trick-num {
+    font-size: 17px !important;
+  }
+
+  /* Center Trick Cross */
+  .center-trick-cross-arena {
+    width: 155px !important;
+    height: 155px !important;
+  }
+  .trick-cross-slot.pos-top {
+    top: -14px !important;
+  }
+  .trick-cross-slot.pos-bottom {
+    bottom: -14px !important;
+  }
+  .trick-cross-slot.pos-left {
+    left: -14px !important;
+  }
+  .trick-cross-slot.pos-right {
+    right: -14px !important;
+  }
+  .trick-cross-slot .card-item.size-md {
+    width: 44px !important;
+    height: 66px !important;
+    padding: 2px 3px !important;
+  }
+
+  /* Hand Tray - All 13 cards fit across screen width */
+  .hand-tray-container {
+    width: 100vw !important;
+    margin-top: 2px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .player-hand-row-with-traat {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    gap: 6px !important;
+    padding: 0 4px !important;
+  }
+
+  .player-hand-tray {
+    height: clamp(84px, 14dvh, 102px) !important;
+    max-width: 86vw !important;
+    overflow: visible !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    padding-bottom: 2px !important;
+  }
+
+  .hand-card-wrapper {
+    margin-left: -32px !important;
+    transition: transform 0.15s ease, margin 0.15s ease !important;
+  }
+  .hand-card-wrapper:hover,
+  .hand-card-wrapper:focus-within {
+    margin-left: -18px !important;
+    margin-right: 14px !important;
+    transform: translateY(-18px) !important;
+  }
+
+  .player-hand-tray .card-item.size-md {
+    width: 48px !important;
+    height: 72px !important;
+    padding: 3px 4px !important;
+    border-radius: 6px !important;
+  }
+  .player-hand-tray .card-item.size-md .card-rank {
+    font-size: 10px !important;
+  }
+  .player-hand-tray .card-item.size-md .royal-letter {
+    font-size: 11px !important;
+  }
+  .player-hand-tray .card-item.size-md .mindi-badge {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .traat-dock-right {
+    padding: 4px 6px !important;
+    margin-bottom: 4px !important;
+    border-radius: 12px !important;
+  }
+  .traat-sound-btn {
+    padding: 5px 8px !important;
+    font-size: 9.5px !important;
+    min-width: 62px !important;
+  }
+}
+
+
+/* ========================================================
+   EMOJI REACTIONS & SPECIAL EMOJIS (NINGLE & CHAT)
+======================================================== */
+
+.table-controls-dock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 55;
+}
+
+/* Emoji Trigger Button (Next to TRAAT sound) */
+.emoji-picker-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 56;
+}
+
+.emoji-dock-trigger-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.2);
+  border-radius: 18px;
+  padding: 8px 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  min-width: 68px;
+  user-select: none;
+}
+
+.emoji-dock-trigger-btn:hover,
+.emoji-dock-trigger-btn.is-active {
+  border-color: #f59e0b;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 25px rgba(245, 158, 11, 0.45);
+  transform: translateY(-2px);
+}
+
+.emoji-trigger-icons {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.emoji-trigger-icon-smile {
+  color: #f59e0b;
+}
+
+.emoji-trigger-special-dots {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.emoji-trigger-label {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #fbbf24;
+}
+
+/* Popover Tray (opens upward over the player controls) */
+.emoji-popover-tray {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 330px;
+  max-width: 90vw;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(245, 158, 11, 0.6);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 158, 11, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: emoji-popover-appear 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 100;
+}
+
+@keyframes emoji-popover-appear {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.emoji-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.emoji-tabs-switcher {
+  display: flex;
+  gap: 6px;
+}
+
+.emoji-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.emoji-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.emoji-tab-btn.active {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.4));
+  border-color: #f59e0b;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.special-count-pill {
+  background: #f59e0b;
+  color: #000;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 999px;
+}
+
+.emoji-popover-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.emoji-popover-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.emoji-popover-body {
+  padding: 14px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+/* SPECIAL EMOJIS: NINGLE & CHAT */
+.special-emojis-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.special-section-hint {
+  font-size: 11px;
+  color: #cbd5e1;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.special-emojis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.special-emoji-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1.5px solid transparent;
+}
+
+.special-emoji-card:hover {
+  transform: translateY(-4px) scale(1.04);
+}
+
+/* NINGLE CARD (EMERALD) */
+.special-card-ningle {
+  background: linear-gradient(145deg, rgba(5, 150, 105, 0.25), rgba(16, 185, 129, 0.15));
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.special-card-ningle:hover {
+  border-color: #10b981;
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4), inset 0 0 25px rgba(16, 185, 129, 0.35);
+}
+
+/* CHAT CARD (GOLD / AMBER) */
+.special-card-chat {
+  background: linear-gradient(145deg, rgba(217, 119, 6, 0.25), rgba(245, 158, 11, 0.15));
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.special-card-chat:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4), inset 0 0 25px rgba(245, 158, 11, 0.35);
+}
+
+.special-card-icon-halo {
+  margin-bottom: 8px;
+}
+
+.special-card-icon {
+  font-size: 28px;
+  line-height: 1;
+  display: inline-block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s ease;
+}
+
+.special-emoji-card:hover .special-card-icon {
+  transform: scale(1.15);
+}
+
+.special-card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.special-card-badge-row {
+  margin-bottom: 2px;
+}
+
+.special-card-badge {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.special-card-ningle .special-card-badge {
+  color: #6ee7b7;
+}
+
+.special-card-chat .special-card-badge {
+  color: #fde047;
+}
+
+.special-card-hindi {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  opacity: 0.95;
+}
+
+.special-card-desc {
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+/* POPULAR EMOJIS GRID */
+.standard-emojis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.standard-emoji-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.standard-emoji-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(245, 158, 11, 0.5);
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.standard-emoji-char {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.standard-emoji-name {
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* QUICK BANTER LIST */
+.quick-chats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quick-chat-item-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.quick-chat-item-btn:hover {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(255, 255, 255, 0.1));
+  border-color: #f59e0b;
+  transform: translateX(4px);
+}
+
+.quick-chat-bubble-icon {
+  margin-right: 8px;
+  font-size: 13px;
+}
+
+.quick-chat-text {
+  font-size: 12px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.quick-chat-tag {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border-radius: 6px;
+}
+
+/* FLOATING IN-GAME PLAYER REACTIONS */
+.player-floating-reaction {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.player-floating-reaction.reaction-pos-top {
+  bottom: auto;
+  top: calc(100% + 8px);
+}
+
+/* SPECIAL: NINGLE REACTION ANIMATION */
+.ningle-reaction-anim {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+  border: 2px solid #a7f3d0;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.8), 0 10px 25px rgba(0, 0, 0, 0.7);
+  animation: ningle-chomp-wobble 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes ningle-chomp-wobble {
+  0% {
+    transform: scale(0.3) translateY(24px);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1.22) translateY(-8px) rotate(-4deg);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(0.96) translateY(0) rotate(4deg);
+  }
+  45% {
+    transform: scale(1.1) translateY(-4px) rotate(-2deg);
+  }
+  60% {
+    transform: scale(1) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.85) translateY(-30px);
+    opacity: 0;
+  }
+}
+
+/* SPECIAL: CHAT REACTION ANIMATION */
+.chat-reaction-anim {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+  border: 2px solid #fef08a;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.9), 0 10px 25px rgba(0, 0, 0, 0.7);
+  animation: chat-lightning-zoom 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes chat-lightning-zoom {
+  0% {
+    transform: scale(0.3) translateY(24px);
+    opacity: 0;
+    filter: brightness(2);
+  }
+  12% {
+    transform: scale(1.28) translateY(-10px);
+    opacity: 1;
+    filter: brightness(1.4);
+  }
+  28% {
+    transform: scale(0.95);
+    filter: brightness(1);
+  }
+  44% {
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.85) translateY(-30px);
+    opacity: 0;
+  }
+}
+
+.reaction-special-icon {
+  font-size: 22px;
+  line-height: 1;
+  display: inline-block;
+  animation: special-icon-bounce 0.8s infinite alternate ease-in-out;
+}
+
+@keyframes special-icon-bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px) scale(1.1); }
+}
+
+.reaction-special-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.reaction-special-name {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.reaction-special-sub {
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* STANDARD FLOATING EMOJI BUBBLE */
+.reaction-standard-bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1.5px solid rgba(245, 158, 11, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(245, 158, 11, 0.4);
+  padding: 6px 12px;
+  border-radius: 18px;
+  animation: standard-emoji-float 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes standard-emoji-float {
+  0% {
+    transform: scale(0.3) translateY(20px);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1.2) translateY(-6px);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1) translateY(0);
+  }
+  85% {
+    transform: scale(1) translateY(-8px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.85) translateY(-32px);
+    opacity: 0;
+  }
+}
+
+.reaction-standard-char {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.reaction-standard-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+/* SPEECH CHAT BUBBLE */
+.reaction-chat-bubble {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid #f59e0b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(245, 158, 11, 0.4);
+  padding: 8px 14px;
+  border-radius: 16px;
+  animation: chat-speech-float 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes chat-speech-float {
+  0% {
+    transform: scale(0.4) translateY(18px);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1.08) translateY(-4px);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1) translateY(0);
+  }
+  85% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.85) translateY(-25px);
+    opacity: 0;
+  }
+}
+
+.reaction-chat-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+  .emoji-popover-tray {
+    width: 280px;
+    right: -10px;
+  }
+  .emoji-dock-trigger-btn {
+    min-width: 58px;
+    padding: 6px 8px;
+  }
+  .emoji-trigger-label {
+    font-size: 9px;
+  }
+  .reaction-special-name {
+    font-size: 12px;
+  }
+  .reaction-special-sub {
+    font-size: 9.5px;
+  }
+  .reaction-standard-char {
+    font-size: 26px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .table-controls-dock {
+    gap: 6px !important;
+  }
+  .emoji-popover-tray {
+    max-height: 200px !important;
+    bottom: calc(100% + 6px) !important;
+  }
+  .emoji-popover-body {
+    max-height: 150px !important;
+    padding: 10px !important;
+  }
+  .emoji-dock-trigger-btn {
+    padding: 4px 6px !important;
+    border-radius: 12px !important;
+    min-width: 54px !important;
+  }
+}

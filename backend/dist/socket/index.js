@@ -141,6 +141,20 @@ export const setupWebSocket = (server) => {
                         }
                         break;
                     }
+                    case "send_emoji": {
+                        const callerId = getSocketUser(ws);
+                        if (callerId && data.roomCode) {
+                            broadcastToRoom(data.roomCode, {
+                                type: "room_emoji",
+                                userId: callerId,
+                                emoji: data.emoji,
+                                label: data.label || "",
+                                emojiType: data.emojiType || "standard",
+                                timestamp: Date.now(),
+                            });
+                        }
+                        break;
+                    }
                     default:
                         ws.send(JSON.stringify({
                             type: "error",

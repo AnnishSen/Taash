@@ -7,7 +7,9 @@ import type { LocalVoiceState, VoicePeerStatus } from '../services/voice';
 import { VoiceWidget } from './VoiceWidget';
 import { sound } from '../utils/audio';
 import type { TraatMode } from '../utils/audio';
-import { Eye, Sparkles, LogOut, UserPlus, Copy, Check, Mic, MicOff, VolumeX, Volume2, Zap } from 'lucide-react';
+import { Eye, Sparkles, Flame, LogOut, Maximize, UserPlus, Copy, Check, Mic, MicOff, VolumeX, Volume1, Volume2, Zap } from 'lucide-react';
+import { EmojiPicker } from './EmojiPicker';
+import type { EmojiReactionEvent } from './EmojiPicker';
 
 interface GameTableProps {
   gameState: GameStateView;
@@ -56,11 +58,24 @@ export const GameTable: React.FC<GameTableProps> = ({
 }) => {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [mindiCelebration, setMindiCelebration] = useState<boolean>(false);
+  const [coatCelebration, setCoatCelebration] = useState<{ team: 'A' | 'B' } | null>(null);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
   const [localVoice, setLocalVoice] = useState<LocalVoiceState>(voiceService.getLocalState());
   const [peerVoices, setPeerVoices] = useState<Record<string, VoicePeerStatus>>({});
   const [traatMode, setTraatMode] = useState<TraatMode>('chaal');
   const [screenShaking, setScreenShaking] = useState<boolean>(false);
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState<boolean>(false);
+  const [activeReactions, setActiveReactions] = useState<Record<string, EmojiReactionEvent>>({});
 
   // Subscribe to Voice State
   useEffect(() => {
@@ -71,6 +86,82 @@ export const GameTable: React.FC<GameTableProps> = ({
     return () => unsub();
   }, []);
 
+  // Listen for Room Emojis, Ningle & Chat Reactions
+  useEffect(() => {
+    const handleRoomEmoji = (data: any) => {
+      if (!data.userId || !data.emoji) return;
+      const event: EmojiReactionEvent = {
+        id: `${data.userId}-${Date.now()}-${Math.random()}`,
+        userId: data.userId,
+        emoji: data.emoji,
+        label: data.label,
+        emojiType: data.emojiType || 'standard',
+        timestamp: Date.now(),
+      };
+      setActiveReactions((prev) => ({ ...prev, [data.userId]: event }));
+
+      if (data.emojiType === 'ningle') {
+        sound.playNingleSound();
+      } else if (data.emojiType === 'chat') {
+        sound.playChatSound();
+      } else {
+        sound.playEmojiPop();
+      }
+
+      setTimeout(() => {
+        setActiveReactions((prev) => {
+          if (prev[data.userId]?.id === event.id) {
+            const next = { ...prev };
+            delete next[data.userId];
+            return next;
+          }
+          return prev;
+        });
+      }, 3800);
+    };
+
+    socketService.on('room_emoji', handleRoomEmoji);
+    return () => {
+      socketService.off('room_emoji', handleRoomEmoji);
+    };
+  }, []);
+
+  const handleSendEmoji = (
+    emoji: string,
+    label: string,
+    emojiType: 'standard' | 'ningle' | 'chat' | 'text'
+  ) => {
+    if (roomCode) {
+      socketService.sendEmoji(emoji, label, emojiType, roomCode);
+    }
+    const event: EmojiReactionEvent = {
+      id: `${currentUser.id}-${Date.now()}-${Math.random()}`,
+      userId: currentUser.id,
+      emoji,
+      label,
+      emojiType,
+      timestamp: Date.now(),
+    };
+    setActiveReactions((prev) => ({ ...prev, [currentUser.id]: event }));
+    if (emojiType === 'ningle') {
+      sound.playNingleSound();
+    } else if (emojiType === 'chat') {
+      sound.playChatSound();
+    } else {
+      sound.playEmojiPop();
+    }
+    setTimeout(() => {
+      setActiveReactions((prev) => {
+        if (prev[currentUser.id]?.id === event.id) {
+          const next = { ...prev };
+          delete next[currentUser.id];
+          return next;
+        }
+        return prev;
+      });
+    }, 3800);
+  };
+
   const handleCopyCode = () => {
     if (!roomCode) return;
     navigator.clipboard.writeText(roomCode);
@@ -78,15 +169,23 @@ export const GameTable: React.FC<GameTableProps> = ({
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  // Mindi capture celebration banner
+  // Mindi & Coat capture celebration banners
   const prevMindisRef = useRef((gameState.teamAMindis || 0) + (gameState.teamBMindis || 0));
   useEffect(() => {
     const total = (gameState.teamAMindis || 0) + (gameState.teamBMindis || 0);
     if (total > prevMindisRef.current) {
-      setMindiCelebration(true);
-      sound.playMindiCapture();
-      const timer = setTimeout(() => setMindiCelebration(false), 2200);
-      return () => clearTimeout(timer);
+      if (gameState.teamAMindis === 4 || gameState.teamBMindis === 4) {
+        const cTeam = gameState.teamAMindis === 4 ? 'A' : 'B';
+        setCoatCelebration({ team: cTeam });
+        sound.playCoat();
+        const timer = setTimeout(() => setCoatCelebration(null), 4000);
+        return () => clearTimeout(timer);
+      } else {
+        setMindiCelebration(true);
+        sound.playMindiCapture();
+        const timer = setTimeout(() => setMindiCelebration(false), 2200);
+        return () => clearTimeout(timer);
+      }
     }
     prevMindisRef.current = total;
   }, [gameState.teamAMindis, gameState.teamBMindis]);
@@ -154,29 +253,58 @@ export const GameTable: React.FC<GameTableProps> = ({
     return true;
   };
 
-  const checkCardPlayable = (card: string): boolean => {
-    if (!isMyTurn || isChoosingPhase) return false;
-    return isCardLegal(card);
-  };
-
   const canOpenTrump =
     isMyTurn &&
     !gameState.trumpOpened &&
     gameState.currentTrick.length > 0 &&
     !hasLeadSuit;
 
-  const handlePlayCard = (card: string) => {
-    if (!checkCardPlayable(card)) return;
-    const isTraat = traatMode === 'traat' || traatMode === 'full';
-    const traatVol = isTraat ? 100 : 20;
-    sound.playTraatCardPlay(traatMode);
-    if (isTraat) {
-      setScreenShaking(true);
-      setTimeout(() => setScreenShaking(false), 750);
+  // Double-tap to play card:
+  // First tap = lift card up; Second tap on same lifted card = throw card
+  const handleCardClick = (card: string) => {
+    // A. Raangi choosing hidden trump phase
+    if (isChoosingPhase && isRaangi) {
+      if (selectedCard === card) {
+        // Second tap: confirms choosing this card as hidden trump
+        setSelectedCard(null);
+        socketService.chooseTrump(card);
+      } else {
+        // First tap: lifts card to preview
+        setSelectedCard(card);
+      }
+      return;
     }
-    setSelectedCard(card);
-    socketService.playCard(card, traatVol);
-    setTraatMode('chaal');
+
+    // B. Normal play phase: check if it is player turn
+    if (!isMyTurn || isChoosingPhase) {
+      // Allow previewing / inspecting card
+      setSelectedCard((prev) => (prev === card ? null : card));
+      return;
+    }
+
+    // Verify card is legal
+    if (!isCardLegal(card)) {
+      setSelectedCard(null);
+      return;
+    }
+
+    // C. Single tap: lifts card; Second tap: throws card
+    if (selectedCard === card) {
+      // Second tap on already lifted card -> Throw to table!
+      const isTraat = traatMode === 'traat' || traatMode === 'full';
+      const traatVol = isTraat ? 100 : 20;
+      sound.playTraatCardPlay(traatMode);
+      if (isTraat) {
+        setScreenShaking(true);
+        setTimeout(() => setScreenShaking(false), 750);
+      }
+      socketService.playCard(card, traatVol);
+      setSelectedCard(null);
+      setTraatMode('chaal');
+    } else {
+      // First tap -> Lift this card up
+      setSelectedCard(card);
+    }
   };
 
   // Organize trick cards by relative seat position
@@ -214,6 +342,14 @@ export const GameTable: React.FC<GameTableProps> = ({
       {/* Top In-Game Quick Action Bar */}
       <div className="game-table-top-actions">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            className="btn btn-secondary btn-sm btn-fullscreen-toggle"
+            onClick={toggleFullscreen}
+            title="Fullscreen Mode"
+          >
+            <Maximize size={13} />
+          </button>
+
           {onLeaveRoom && (
             <button
               className="btn btn-danger btn-sm"
@@ -255,7 +391,7 @@ export const GameTable: React.FC<GameTableProps> = ({
         )}
       </div>
 
-      <div className="felt-table">
+      <div className="felt-table" onClick={(e) => { if (e.target === e.currentTarget && selectedCard) setSelectedCard(null); }}>
         {/* Table Felt Watermark */}
         <div className="table-center-mode-label">
           1 Deck Hide Mode
@@ -364,11 +500,44 @@ export const GameTable: React.FC<GameTableProps> = ({
           const isMuted = isMe ? localVoice.isMuted : !!peerVoices[userId]?.isMuted;
           const isDeafened = isMe ? localVoice.isDeafened : !!peerVoices[userId]?.isDeafened;
 
+          const reaction = userId ? activeReactions[userId] : null;
+
           return (
             <div
               key={`station-${seatNum}-${pos}`}
               className={`player-station station-${pos} ${isTurn ? 'is-turn' : ''} ${isSpeaking ? 'is-speaking' : ''}`}
             >
+              {/* Floating Live Emoji / Ningle / Chat Reaction */}
+              {reaction && (
+                <div className={`player-floating-reaction reaction-pos-${pos} reaction-type-${reaction.emojiType}`}>
+                  {reaction.emojiType === 'ningle' ? (
+                    <div className="reaction-special-badge ningle-reaction-anim">
+                      <span className="reaction-special-icon">🐍🍽️</span>
+                      <div className="reaction-special-texts">
+                        <span className="reaction-special-name">NINGLE!</span>
+                        <span className="reaction-special-sub">निगल गया!</span>
+                      </div>
+                    </div>
+                  ) : reaction.emojiType === 'chat' ? (
+                    <div className="reaction-special-badge chat-reaction-anim">
+                      <span className="reaction-special-icon">⚡👅</span>
+                      <div className="reaction-special-texts">
+                        <span className="reaction-special-name">CHAT!</span>
+                        <span className="reaction-special-sub">चट कर दिया!</span>
+                      </div>
+                    </div>
+                  ) : reaction.emojiType === 'text' ? (
+                    <div className="reaction-chat-bubble">
+                      <span className="reaction-chat-text">{reaction.label || reaction.emoji}</span>
+                    </div>
+                  ) : (
+                    <div className="reaction-standard-bubble">
+                      <span className="reaction-standard-char">{reaction.emoji}</span>
+                      {reaction.label && <span className="reaction-standard-label">{reaction.label}</span>}
+                    </div>
+                  )}
+                </div>
+              )}
               {/* Name above avatar for top, left, right */}
               {pos !== 'bottom' && (
                 <div className="player-station-name">
@@ -464,10 +633,24 @@ export const GameTable: React.FC<GameTableProps> = ({
           </div>
 
           {/* Dehla Celebration Popup Banner */}
-          {mindiCelebration && (
+          {mindiCelebration && !coatCelebration && (
             <div className="mindi-banner-popup">
               <Sparkles size={20} />
               <span>1 DEHLA!</span>
+            </div>
+          )}
+
+          {/* Big In-Game Coat Banner */}
+          {coatCelebration && (
+            <div className="coat-table-popup">
+              <div className="coat-popup-badge">
+                <Flame size={20} className="flame-flicker" />
+                <span>🔥 COAT! MINDI COAT! 🔥</span>
+                <Flame size={20} className="flame-flicker" />
+              </div>
+              <div className="coat-popup-text">
+                TEAM {coatCelebration.team} CAPTURED ALL 4 DEHLE (10s)!
+              </div>
             </div>
           )}
 
@@ -504,14 +687,22 @@ export const GameTable: React.FC<GameTableProps> = ({
           <span style={{ fontSize: '13px', fontWeight: 800, color: isMyTurn ? 'var(--accent-gold)' : 'var(--text-muted)' }}>
             {isChoosingPhase
               ? isRaangi
-                ? '👑 You are Raangi: Choose one card as hidden Rang'
+                ? selectedCard
+                  ? `👑 Tap ${selectedCard} again to confirm as Bandh Rang!`
+                  : '👑 You are Raangi: Tap a card to lift & choose as hidden Rang'
                 : 'Waiting for Raangi to choose Rang...'
               : isMyTurn
               ? isTrumpOpener
                 ? hasTrumpSuit && gameState.trumpSuit
-                  ? `⚡ You asked for Rang: Play your ${SUIT_NAMES[gameState.trumpSuit]} card!`
-                  : '⚡ No Rang cards in hand: You can play any card!'
-                : '⚡ YOUR TURN: Select and play a card'
+                  ? selectedCard
+                    ? `⚡ Tap ${selectedCard} again to throw Rang!`
+                    : `⚡ You asked for Rang: Tap a ${SUIT_NAMES[gameState.trumpSuit]} card to lift it`
+                  : selectedCard
+                    ? `⚡ Tap ${selectedCard} again to throw!`
+                    : '⚡ No Rang cards: Tap any card to lift it'
+                : selectedCard
+                  ? `⚡ Tap ${selectedCard} again to throw!`
+                  : '⚡ YOUR TURN: Tap a card to lift it'
               : winnerPlayer
               ? `Trick won by ${winnerPlayer.userId === currentUser.id ? 'You' : winnerPlayer.username}`
               : 'Waiting for other players to play...'}
@@ -535,7 +726,7 @@ export const GameTable: React.FC<GameTableProps> = ({
         {/* Hand Cards with Enlarged TRAAT button on the right */}
         <div className="player-hand-row-with-traat">
           {/* Player Hand Cards */}
-          <div className="player-hand-tray">
+          <div className="player-hand-tray" onClick={(e) => { if (e.target === e.currentTarget && selectedCard) setSelectedCard(null); }}>
             {sortedHand.map((card, idx) => {
               const isLegal = isCardLegal(card);
               const isPlayable = isMyTurn && !isChoosingPhase && isLegal;
@@ -543,10 +734,11 @@ export const GameTable: React.FC<GameTableProps> = ({
               const isTrump = gameState.trumpOpened && gameState.trumpSuit ? card.slice(-1) === gameState.trumpSuit : false;
 
               // Fanning calculation: curve angle and vertical offset
+              const isSelected = selectedCard === card;
               const total = sortedHand.length;
               const offset = idx - (total - 1) / 2;
-              const rot = offset * 2.0;
-              const elev = Math.abs(offset) * 2.5;
+              const rot = isSelected ? 0 : offset * 2.0;
+              const elev = (Math.abs(offset) * 2.5) + (isSelected ? -28 : 0);
 
               return (
                 <div key={card} className="hand-card-wrapper">
@@ -555,31 +747,42 @@ export const GameTable: React.FC<GameTableProps> = ({
                     size="md"
                     isPlayable={isPlayable}
                     isInvalid={isInvalid}
-                    isSelected={selectedCard === card}
+                    isSelected={isSelected}
                     isTrump={isTrump}
                     rotation={rot}
                     elevation={elev}
-                    onClick={() => handlePlayCard(card)}
+                    onClick={() => handleCardClick(card)}
                   />
                 </div>
               );
             })}
           </div>
 
-          {/* TRAAT 2-Mode Sound Selector (Docked to the Right of Hand Cards) */}
-          <div className="traat-dock-right" title="Card Play Sound: Chaal or Traat">
-            <div className="traat-label-pill">
-              <span className="traat-label-text">SOUND</span>
-            </div>
+          {/* Combined Action Controls: TRAAT Sound & Emojis */}
+          <div className="table-controls-dock">
+            {/* TRAAT 2-Mode Sound Selector (Docked to the Right of Hand Cards) */}
+          <div className="traat-dock-right" title="Card Play Sound: Chaal or Traat">
+            <div className="traat-label-pill">
+              <span className="traat-label-text">SOUND</span>
+            </div>
             <div className="traat-mode-buttons-stack">
               <button
                 type="button"
-                className={`traat-sound-btn ${traatMode === 'chaal' || traatMode === 'halki' ? 'active-chaal' : ''}`}
+                className={`traat-sound-btn ${traatMode === 'chaal' ? 'active-chaal' : ''}`}
                 onClick={() => setTraatMode('chaal')}
-                title="Chaal: Standard card drop (Default)"
+                title="Chaal: Standard soft card drop (Default)"
               >
-                <Volume2 size={16} />
+                <Volume2 size={15} />
                 <span>Chaal</span>
+              </button>
+              <button
+                type="button"
+                className={`traat-sound-btn ${traatMode === 'halki' ? 'active-halki' : ''}`}
+                onClick={() => setTraatMode('halki')}
+                title="Halki: Snappy & distinct card slap"
+              >
+                <Volume1 size={15} />
+                <span>Halki</span>
               </button>
               <button
                 type="button"
@@ -587,13 +790,25 @@ export const GameTable: React.FC<GameTableProps> = ({
                 onClick={() => setTraatMode('traat')}
                 title="Traat: 3-Second Thunderous Desi Table Slam! 💥"
               >
-                <Zap size={16} />
+                <Zap size={15} />
                 <span>Traat 💥</span>
               </button>
             </div>
+
+            {/* Emojis, Ningle & Chat Drawer */}
+            <EmojiPicker
+              isOpen={emojiPickerOpen}
+              onToggle={() => setEmojiPickerOpen((prev) => !prev)}
+              onSelectEmoji={handleSendEmoji}
+            />
+          </div>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+
+
+

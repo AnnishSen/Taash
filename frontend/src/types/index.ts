@@ -87,3 +87,19 @@ export interface FriendRequest {
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   sender?: User;
 }
+
+export interface GameOverPayload {
+  winnerTeam: 'A' | 'B' | 'draw';
+  teamAMindis: number;
+  teamBMindis: number;
+  teamATricks: number;
+  teamBTricks: number;
+  isCoat?: boolean;
+  coatTeam?: 'A' | 'B' | null;
+  isTariya?: boolean;
+  tariyaTeam?: 'A' | 'B' | null;
+  tariyaVictimTeam?: 'A' | 'B' | null;
+  seats?: SeatInfo[];
+  dealerSeat?: number;
+  roundNumber?: number;
+}

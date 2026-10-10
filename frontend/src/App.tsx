@@ -352,6 +352,11 @@ export const App: React.FC = () => {
       }));
     };
 
+    const unsubCoatAlert = (data: any) => {
+      sound.playCoat();
+      showToast(data.message || `🔥 COAT! Team ${data.coatTeam} captured all 4 Mindis (10s)!`);
+    };
+
     const unsubGameOver = (data: any) => {
       setGameOverData(data);
       setShowGameOverModal(true);
@@ -418,6 +423,7 @@ export const App: React.FC = () => {
     const offTrickFinished = socketService.on('trick_finished', unsubTrickFinished);
     const offScoreUpdated = socketService.on('score_updated', unsubScoreUpdated);
     const offGameOver = socketService.on('game_over', unsubGameOver);
+    const offCoatAlert = socketService.on('coat_alert', unsubCoatAlert);
     const offGameSync = socketService.on('game_sync', unsubGameSync);
     const offGameCancelled = socketService.on('game_cancelled', unsubGameCancelled);
     const offInvitation = socketService.on('room_invitation', unsubInvitation);
@@ -441,6 +447,7 @@ export const App: React.FC = () => {
       offTrickFinished();
       offScoreUpdated();
       offGameOver();
+      offCoatAlert();
       offGameSync();
       offGameCancelled();
       offInvitation();
@@ -487,11 +494,11 @@ export const App: React.FC = () => {
   const myPlayer = roomPlayers.find((p) => p.userId === currentUser?.id);
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${gameState.phase === 'PLAYING' || gameState.phase === 'CHOOSING_TRUMP' ? 'in-table-mode' : ''}`}>
       {/* Top Navbar */}
       <header className="top-navbar">
         <div className="logo-group">
-          <span className="logo-icon">🂡</span>
+          <img src="/favicon.svg" alt="Taash Logo" className="logo-img" />
           <span className="logo-text">TAASH</span>
           <span className="logo-badge">DEHLA</span>
         </div>
@@ -663,6 +670,11 @@ export const App: React.FC = () => {
           teamBMindis={gameOverData.teamBMindis}
           teamATricks={gameOverData.teamATricks}
           teamBTricks={gameOverData.teamBTricks}
+          isCoat={gameOverData.isCoat}
+          coatTeam={gameOverData.coatTeam}
+          isTariya={gameOverData.isTariya}
+          tariyaTeam={gameOverData.tariyaTeam}
+          tariyaVictimTeam={gameOverData.tariyaVictimTeam}
           roundNumber={gameOverData.roundNumber}
           mySeat={myPlayer?.seat || null}
           onReturnToLobby={() => {
@@ -690,3 +702,7 @@ export const App: React.FC = () => {
 };
 
 export default App;
+
+
+
+

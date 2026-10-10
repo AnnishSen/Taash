@@ -117,7 +117,7 @@ export const Card: React.FC<CardProps> = ({
         isDehla ? 'is-mindi' : ''
       } ${className}`}
       style={dynamicStyle}
-      onClick={isPlayable ? onClick : undefined}
+      onClick={onClick}
       title={`${rank} of ${SUIT_NAMES[suit] || suit}${isDehla ? ' (Dehla!)' : ''}${isInvalid ? ' (Cannot play on this Chaal)' : ''}`}
     >
       {/* Top Left Corner */}
@@ -152,8 +152,13 @@ export const Card: React.FC<CardProps> = ({
         <SuitIcon suit={suit} size={iconSize} className="card-corner-icon" />
       </div>
 
-      {/* Trump Ribbon */}
-      {isTrump && <div className="trump-ribbon">RANG</div>}
+      {/* Subtle Trump Accent */}
+      {isTrump && (
+        <div className="trump-corner-accent" title="Trump (Rang) Card">
+          <span className="trump-mini-gem">◆</span>
+        </div>
+      )}
     </div>
   );
 };
+

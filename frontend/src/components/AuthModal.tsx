@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { api } from '../services/api';
 import { socketService } from '../services/socket';
 import type { User } from '../types';
-import { LogIn, UserPlus, Sparkles } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
 
 interface AuthModalProps {
   onSuccess: (user: User) => void;
@@ -57,9 +57,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ display: 'inline-flex', padding: '12px', borderRadius: '16px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', marginBottom: '12px' }}>
-            <Sparkles size={28} />
-          </div>
+          <div style={{ display: 'inline-flex', padding: '10px', borderRadius: '18px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', marginBottom: '12px' }}>`n            <img src="/favicon.svg" alt="Taash Logo" style={{ width: 44, height: 44, objectFit: 'contain' }} />`n          </div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '6px' }}>
             {isLogin ? 'Welcome back to Taash' : 'Join the Taash Arena'}
           </h2>
@@ -148,3 +146,5 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onSuccess }) => {
     </div>
   );
 };
+
+

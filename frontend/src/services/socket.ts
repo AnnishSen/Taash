@@ -201,6 +201,10 @@ class SocketService {
   nextRound(roomCode: string) {
     this.send({ type: 'next_round', roomCode });
   }
+
+  sendEmoji(emoji: string, label?: string, emojiType?: string, roomCode?: string) {
+    this.send({ type: 'send_emoji', emoji, label, emojiType, roomCode });
+  }
 }
 
 export const socketService = new SocketService();

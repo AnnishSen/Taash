@@ -366,14 +366,8 @@ export const finishTrick = async (roomId) => {
     gameState.leadSuit = null;
     gameState.trickNumber++;
     // 6. Check if round has finished:
-    // a) One team secured majority Mindis (3 or 4 Mindis, e.g. 3 vs 1 or 4 vs 0)
-    const hasMindiMajority = gameState.teamAMindis >= 3 || gameState.teamBMindis >= 3;
-    // b) Equal Mindis (e.g. 2-2 tie) and one team has reached 7 or more hands (tricks)
-    const hasEqualMindiHandsMajority = gameState.teamAMindis === gameState.teamBMindis &&
-        (gameState.teamATricks >= 7 || gameState.teamBTricks >= 7);
-    // c) All 13 tricks completed
-    const allTricksDone = gameState.trickNumber > 13;
-    const gameFinished = hasMindiMajority || hasEqualMindiHandsMajority || allTricksDone;
+    // User rule: Do NOT end the game until every player throws all their cards (all 13 tricks completed)
+    const gameFinished = gameState.trickNumber > 13;
     if (gameFinished) {
         setTimeout(async () => {
             try {
@@ -474,6 +468,8 @@ export const updateScore = async (roomId, winnerSeat) => {
     if (!room) {
         throw new Error("Room not found");
     }
+    const isCoatAchieved = gameState.teamAMindis === 4 || gameState.teamBMindis === 4;
+    const coatTeam = gameState.teamAMindis === 4 ? "A" : gameState.teamBMindis === 4 ? "B" : null;
     broadcastToRoom(room.roomCode, {
         type: "score_updated",
         teamAScore: gameState.teamAScore,
@@ -482,7 +478,16 @@ export const updateScore = async (roomId, winnerSeat) => {
         teamBTricks: gameState.teamBTricks,
         teamAMindis: gameState.teamAMindis,
         teamBMindis: gameState.teamBMindis,
+        isCoat: isCoatAchieved,
+        coatTeam,
     });
+    if (isCoatAchieved && coatTeam) {
+        broadcastToRoom(room.roomCode, {
+            type: "coat_alert",
+            coatTeam,
+            message: `🔥 COAT! Team ${coatTeam} has captured ALL 4 TENS (Mindis)!`,
+        });
+    }
 };
 export const endGame = async (roomId) => {
     const gameState = getGameState(roomId);
@@ -535,6 +540,11 @@ export const endGame = async (roomId) => {
         data: { status: "FINISHED" },
     });
     gameState.phase = "FINISHED";
+    const isCoat = gameState.teamAMindis === 4 || gameState.teamBMindis === 4;
+    const coatTeam = gameState.teamAMindis === 4 ? "A" : gameState.teamBMindis === 4 ? "B" : null;
+    const isTariya = gameState.teamATricks === 13 || gameState.teamBTricks === 13;
+    const tariyaTeam = gameState.teamATricks === 13 ? "A" : gameState.teamBTricks === 13 ? "B" : null;
+    const tariyaVictimTeam = tariyaTeam === "A" ? "B" : tariyaTeam === "B" ? "A" : null;
     broadcastToRoom(room.roomCode, {
         type: "game_over",
         winnerTeam,
@@ -542,6 +552,11 @@ export const endGame = async (roomId) => {
         teamBMindis: gameState.teamBMindis,
         teamATricks: gameState.teamATricks,
         teamBTricks: gameState.teamBTricks,
+        isCoat,
+        coatTeam,
+        isTariya,
+        tariyaTeam,
+        tariyaVictimTeam,
         seats: gameState.players.map((p) => ({
             seat: p.seat,
             userId: p.userId,
