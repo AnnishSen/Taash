@@ -52,11 +52,11 @@ export const SuitIcon: React.FC<{ suit: string; size?: number; className?: strin
   }
 };
 
-const SUIT_NAMES: Record<string, string> = {
-  S: 'Spades',
-  H: 'Hearts',
-  D: 'Diamonds',
-  C: 'Clubs',
+export const SUIT_NAMES: Record<string, string> = {
+  S: 'Hukum',
+  H: 'Pan',
+  D: 'It',
+  C: 'Chiri',
 };
 
 export const Card: React.FC<CardProps> = ({

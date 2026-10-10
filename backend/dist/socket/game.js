@@ -5,11 +5,11 @@ import { createFreshDeck, humanShuffle, cutDeck, validateDeck, } from "./deck.js
 import { getSocket, getSocketUser, sendToPlayer, broadcastToRoom } from "./socketManager.js";
 /**
  * Deal packet of cards from the top of the physical cut deck according to Mindi Coat rules.
- * Cards are dealt clockwise starting from the player to the left of the dealer (Raangi).
+ * Cards are dealt anti-clockwise starting from the player to the right of the dealer (Raangi).
  */
 const dealPacket = (roomId, players, cardsPerPlayer) => {
     const gameState = getGameState(roomId);
-    // Dealing begins with the player to the left of the dealer (Raangi)
+    // Dealing begins anti-clockwise with the player to the right of the dealer (Raangi)
     const startSeat = getRaangiSeat(gameState.dealerSeat);
     const dealOrder = [];
     for (let i = 0; i < 4; i++) {
@@ -532,6 +532,10 @@ export const endGame = async (roomId) => {
             winnerTeam = "draw";
         }
     }
+    gameState.lastWinnerTeam = winnerTeam;
+    const currentDealerTeam = (gameState.dealerSeat % 2 !== 0) ? "A" : "B";
+    const didDealerTeamWin = winnerTeam === currentDealerTeam;
+    const nextDealerSeat = didDealerTeamWin ? getNextSeat(gameState.dealerSeat) : gameState.dealerSeat;
     const room = await prisma.room.findUnique({ where: { id: roomId } });
     if (!room)
         throw new Error("Room not found");
@@ -701,13 +705,21 @@ export const startNextRound = async (ws, data) => {
     // Determine previous dealer and next round number
     let prevDealerSeat = 1;
     let nextRoundNumber = 2;
+    let lastWinnerTeam = undefined;
     if (hasGameState(room.id)) {
         const oldState = getGameState(room.id);
         prevDealerSeat = oldState.dealerSeat || 1;
         nextRoundNumber = (oldState.roundNumber || 1) + 1;
+        lastWinnerTeam = oldState.lastWinnerTeam;
     }
-    // 4. Dealer rotation: Rotate dealer clockwise to the next seat (1->2->3->4->1)
-    const newDealerSeat = getNextSeat(prevDealerSeat);
+    // 4. Peeshu (Dealer) rotation rule:
+    // Dealer's team (Team A = seats 1, 3; Team B = seats 2, 4)
+    // The dealer does NOT change until his team wins a round!
+    // If dealer's team won: next dealer rotates anti-clockwise to the right next player (seat 1->2->3->4->1).
+    // If dealer's team lost or drew: dealer DOES NOT CHANGE (same Peeshu deals again).
+    const prevDealerTeam = (prevDealerSeat % 2 !== 0) ? "A" : "B";
+    const didDealerTeamWin = (lastWinnerTeam === prevDealerTeam);
+    const newDealerSeat = didDealerTeamWin ? getNextSeat(prevDealerSeat) : prevDealerSeat;
     const newDealer = room.players.find((p) => p.seat === newDealerSeat) || room.players[0];
     const newRaangiSeat = getRaangiSeat(newDealerSeat);
     const newRaangi = room.players.find((p) => p.seat === newRaangiSeat) || room.players[1];

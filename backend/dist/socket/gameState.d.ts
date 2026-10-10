@@ -31,6 +31,7 @@ export interface GameState {
     teamBMindis: number;
     phase: "CHOOSING_TRUMP" | "PLAYING" | "FINISHED";
     roundNumber: number;
+    lastWinnerTeam?: "A" | "B" | "draw";
 }
 export declare const getPlayerByUserId: (roomId: string, userId: string) => Player;
 export declare const createGameState: (roomId: string, deck: string[], dealerUserId: string, dealerSeat: number, players: Player[], roundNumber?: number) => void;

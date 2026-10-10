@@ -676,6 +676,7 @@ export const App: React.FC = () => {
           tariyaTeam={gameOverData.tariyaTeam}
           tariyaVictimTeam={gameOverData.tariyaVictimTeam}
           roundNumber={gameOverData.roundNumber}
+          didDealerTeamWin={gameOverData.didDealerTeamWin}
           mySeat={myPlayer?.seat || null}
           onReturnToLobby={() => {
             const code = currentRoom?.roomCode;

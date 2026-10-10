@@ -33,6 +33,7 @@ export interface GameState {
     teamBMindis: number;
     phase: "CHOOSING_TRUMP" | "PLAYING" | "FINISHED";
     roundNumber: number;
+    lastWinnerTeam?: "A" | "B" | "draw";
 }
 
 const gameStates = new Map<string, GameState>();

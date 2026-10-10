@@ -16,6 +16,8 @@ interface GameOverModalProps {
   tariyaVictimTeam?: 'A' | 'B' | null;
   roundNumber?: number;
   mySeat: number | null;
+  didDealerTeamWin?: boolean;
+  nextDealerSeat?: number;
   onReturnToLobby: () => void;
   onNextRound: () => void;
 }
@@ -32,6 +34,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   tariyaTeam: propTariyaTeam,
   roundNumber,
   mySeat,
+  didDealerTeamWin,
   onReturnToLobby,
   onNextRound,
 }) => {
@@ -279,6 +282,27 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
               {teamBTricks} / 13 Tricks Won
             </div>
           </div>
+        </div>
+
+        {/* Peeshu (Dealer) Rule Rotation Verdict */}
+        <div className="peeshu-verdict-container">
+          {didDealerTeamWin ? (
+            <div className="peeshu-verdict-box peeshu-won">
+              <span className="peeshu-badge-icon">👑</span>
+              <div className="peeshu-text-stack">
+                <span className="peeshu-main-title">Peeshu Team Won the Round!</span>
+                <span className="peeshu-sub-desc">Dealing rotates anti-clockwise to the right player for Round {(roundNumber || 1) + 1}.</span>
+              </div>
+            </div>
+          ) : (
+            <div className="peeshu-verdict-box peeshu-lost">
+              <span className="peeshu-badge-icon">🔄</span>
+              <div className="peeshu-text-stack">
+                <span className="peeshu-main-title">Peeshu Team Lost: Dealer Does NOT Change!</span>
+                <span className="peeshu-sub-desc">Same Peeshu must deal again for Round {(roundNumber || 1) + 1}.</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons: Return to Lobby & Next Round */}

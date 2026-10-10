@@ -23,10 +23,10 @@ interface GameTableProps {
 }
 
 const SUIT_NAMES: Record<string, string> = {
-  S: 'Spades',
-  H: 'Hearts',
-  D: 'Diamonds',
-  C: 'Clubs',
+  S: 'Hukum',
+  H: 'Pan',
+  D: 'It',
+  C: 'Chiri',
 };
 
 const SUIT_ORDER: Record<string, number> = { S: 0, H: 1, C: 2, D: 3 };
@@ -591,8 +591,8 @@ export const GameTable: React.FC<GameTableProps> = ({
                 ) : null}
 
                 {isDealer && (
-                  <div className="chip-badge chip-dealer" title="Dealer">
-                    D
+                  <div className="chip-badge chip-dealer chip-peeshu" title="Peeshu (Dealer)">
+                    P
                   </div>
                 )}
                 {isPlayerRaangi && (
